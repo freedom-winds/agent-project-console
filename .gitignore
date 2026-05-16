@@ -1,0 +1,187 @@
+# =============================================================================
+# Agent Project Console - .gitignore
+# Covers: Python backend (Flask + SQLite), Vite/React/TS frontend,
+#         PyInstaller launcher, scripts, and common editor/OS artifacts.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# OS
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# Editors / IDEs
+# -----------------------------------------------------------------------------
+.vscode/
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# -----------------------------------------------------------------------------
+# Logs & temp
+# -----------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+*.old
+
+# -----------------------------------------------------------------------------
+# Secrets / local environment
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+.mcp_token
+mcp_token.txt
+
+# =============================================================================
+# Python (backend, launcher, scripts)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# -----------------------------------------------------------------------------
+# Backend specifics (Flask)
+# -----------------------------------------------------------------------------
+backend/instance/
+!backend/instance/.gitkeep
+*.sqlite3
+*.sqlite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# -----------------------------------------------------------------------------
+# Launcher (PyInstaller)
+# -----------------------------------------------------------------------------
+launcher/build/
+launcher/dist/
+launcher/__pycache__/
+launcher/*.manifest
+# Keep launcher/tray_app.spec (build config) tracked
+
+# =============================================================================
+# Node / Frontend (Vite + React + TS + Tailwind)
+# =============================================================================
+node_modules/
+.pnp
+.pnp.js
+.pnp.cjs
+
+# Build output
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+frontend/.vite/
+frontend/stats.html
+
+# Vite / cache
+.vite/
+.cache/
+.parcel-cache/
+
+# Tailwind / PostCSS
+*.css.map
+
+# Test
+frontend/coverage/
+
+# Misc JS
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# Package manager debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local env for Vite
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# =============================================================================
+# Misc
+# =============================================================================
+*.pid
+*.seed
+*.pid.lock
+.history/

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "create_node",
+  "description": "Input for the MCP create_node tool. The hierarchy must be Part -> Phase -> Step.",
+  "type": "object",
+  "properties": {
+    "project_id": { "type": "string" },
+    "parent_id": { "type": ["string", "null"] },
+    "node_type": { "type": "string", "enum": ["part", "phase", "step"] },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "acceptance_criteria": { "type": "string" },
+    "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "owner": { "type": "string" },
+    "reason": { "type": "string", "description": "Why this node is being created. Recorded in activity log." }
+  },
+  "required": ["project_id", "node_type", "title"],
+  "additionalProperties": true
+}
