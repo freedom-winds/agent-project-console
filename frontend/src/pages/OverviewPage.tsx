@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useOutletContext, Link, useParams } from 'react-router-dom'
 import { Activity as ActivityIcon, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../api'
 import { ProgressBar, StatusBadge } from '../components/StatusBadge'
 
@@ -13,6 +14,7 @@ interface Ctx {
 export default function OverviewPage() {
   const { project, tree } = useOutletContext<Ctx>()
   const { id } = useParams()
+  const { t } = useTranslation()
   const [activity, setActivity] = useState<any[]>([])
   const [checkpoints, setCheckpoints] = useState<any[]>([])
 
@@ -33,19 +35,17 @@ export default function OverviewPage() {
   return (
     <div className="grid gap-6 p-6 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">
-        {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatCard icon={<Loader2 size={18} className="text-st-in_progress" />} label="进行中" value={inProgress.length} color="text-st-in_progress" />
-          <StatCard icon={<CheckCircle2 size={18} className="text-st-done" />} label="已完成" value={tree?.stats?.done_steps || 0} color="text-st-done" />
-          <StatCard icon={<AlertTriangle size={18} className="text-st-blocked" />} label="阻塞" value={blocked.length} color="text-st-blocked" />
-          <StatCard icon={<ActivityIcon size={18} className="text-st-review" />} label="待审核" value={review.length} color="text-st-review" />
+          <StatCard icon={<Loader2 size={18} className="text-st-in_progress" />} label={t('stat_in_progress')} value={inProgress.length} color="text-st-in_progress" />
+          <StatCard icon={<CheckCircle2 size={18} className="text-st-done" />} label={t('stat_completed')} value={tree?.stats?.done_steps || 0} color="text-st-done" />
+          <StatCard icon={<AlertTriangle size={18} className="text-st-blocked" />} label={t('stat_blocked')} value={blocked.length} color="text-st-blocked" />
+          <StatCard icon={<ActivityIcon size={18} className="text-st-review" />} label={t('stat_review')} value={review.length} color="text-st-review" />
         </div>
 
-        {/* Part progress overview */}
         <div className="card p-4">
-          <h2 className="mb-3 text-base font-semibold">Part Progress</h2>
+          <h2 className="mb-3 text-base font-semibold">{t('part_progress')}</h2>
           {parts.length === 0 ? (
-            <div className="text-sm text-fg-dim">No Parts yet. Use MCP create_node or the Tree page.</div>
+            <div className="text-sm text-fg-dim">{t('no_parts')}</div>
           ) : (
             <div className="space-y-3">
               {parts.map((p: any) => (
@@ -64,12 +64,11 @@ export default function OverviewPage() {
           )}
         </div>
 
-        {/* In progress and blocked */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="card p-4">
-            <h2 className="mb-3 text-base font-semibold">In Progress</h2>
+            <h2 className="mb-3 text-base font-semibold">{t('in_progress_title')}</h2>
             {inProgress.length === 0 ? (
-              <div className="text-sm text-fg-dim">No steps in progress.</div>
+              <div className="text-sm text-fg-dim">{t('no_steps_in_progress')}</div>
             ) : (
               <div className="space-y-2">
                 {inProgress.map(s => (
@@ -83,9 +82,9 @@ export default function OverviewPage() {
           </div>
 
           <div className="card p-4">
-            <h2 className="mb-3 text-base font-semibold flex items-center gap-2 text-st-blocked"><AlertTriangle size={16} /> Blockers</h2>
+            <h2 className="mb-3 text-base font-semibold flex items-center gap-2 text-st-blocked"><AlertTriangle size={16} /> {t('blockers_title')}</h2>
             {blocked.length === 0 ? (
-              <div className="text-sm text-fg-dim">No blockers.</div>
+              <div className="text-sm text-fg-dim">{t('no_blockers')}</div>
             ) : (
               <div className="space-y-2">
                 {blocked.map(s => (
@@ -100,13 +99,12 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Right: recent activity & checkpoints */}
       <div className="space-y-6">
         <div className="card p-4">
-          <h2 className="mb-3 text-base font-semibold">Recent Activity</h2>
+          <h2 className="mb-3 text-base font-semibold">{t('recent_activity')}</h2>
           <div className="space-y-2">
             {activity.length === 0 ? (
-              <div className="text-sm text-fg-dim">No activity yet.</div>
+              <div className="text-sm text-fg-dim">{t('no_activity')}</div>
             ) : (
               activity.slice(0, 10).map(a => (
                 <div key={a.id} className="text-xs">
@@ -114,7 +112,7 @@ export default function OverviewPage() {
                     <span className="font-mono text-st-in_progress">{a.action_type}</span>
                     <span className="text-fg-dim">{new Date(a.created_at).toLocaleTimeString()}</span>
                   </div>
-                  <div className="text-fg-muted">by {a.actor}</div>
+                  <div className="text-fg-muted">{t('by_actor', { actor: a.actor })}</div>
                 </div>
               ))
             )}
@@ -122,9 +120,9 @@ export default function OverviewPage() {
         </div>
 
         <div className="card p-4">
-          <h2 className="mb-3 text-base font-semibold">Recent Checkpoints</h2>
+          <h2 className="mb-3 text-base font-semibold">{t('recent_checkpoints')}</h2>
           {checkpoints.length === 0 ? (
-            <div className="text-sm text-fg-dim">No checkpoints yet.</div>
+            <div className="text-sm text-fg-dim">{t('no_checkpoints')}</div>
           ) : (
             <div className="space-y-3">
               {checkpoints.slice(0, 5).map(cp => (

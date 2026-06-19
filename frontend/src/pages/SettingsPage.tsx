@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Copy, Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../api'
 
 const ALL_SCOPES = [
@@ -23,6 +24,7 @@ export default function SettingsPage() {
   ])
   const [newToken, setNewToken] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const { t } = useTranslation()
 
   const load = () => api.listTokens().then(d => setTokens(d.tokens || []))
   useEffect(() => { load() }, [])
@@ -40,7 +42,7 @@ export default function SettingsPage() {
   }
 
   const revoke = async (id: string) => {
-    if (!confirm('Revoke this token?')) return
+    if (!confirm(t('confirm_revoke'))) return
     await api.revokeToken(id)
     load()
   }
@@ -50,33 +52,30 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="mb-6 text-2xl font-semibold">Settings</h1>
+    <div className="h-full overflow-y-auto p-8">
+      <h1 className="mb-6 text-2xl font-semibold">{t('settings_title')}</h1>
 
       <div className="card mb-6 p-5">
-        <h2 className="mb-3 text-base font-semibold">MCP Tokens</h2>
-        <p className="mb-4 text-sm text-fg-muted">
-          Tokens are used by the MCP STDIO server to authenticate against this backend.
-          A token is shown only once at creation; copy it immediately.
-        </p>
+        <h2 className="mb-3 text-base font-semibold">{t('mcp_tokens_title')}</h2>
+        <p className="mb-4 text-sm text-fg-muted">{t('mcp_tokens_desc')}</p>
 
         {error && <div className="mb-3 rounded border border-st-cancelled/40 bg-st-cancelled/10 p-2 text-xs text-st-cancelled">{error}</div>}
 
         {newToken && (
           <div className="mb-4 rounded border border-st-done/40 bg-st-done/10 p-3 text-sm">
-            <div className="mb-2 font-medium text-st-done">Token created. Copy now — it will not be shown again.</div>
+            <div className="mb-2 font-medium text-st-done">{t('token_created_msg')}</div>
             <div className="flex items-center gap-2">
               <code className="flex-1 break-all rounded bg-bg-subtle p-2 font-mono text-xs">{newToken}</code>
-              <button className="btn" onClick={() => { navigator.clipboard.writeText(newToken); }}>
-                <Copy size={14} /> Copy
+              <button className="btn" onClick={() => { navigator.clipboard.writeText(newToken) }}>
+                <Copy size={14} /> {t('btn_copy')}
               </button>
             </div>
-            <button className="mt-2 text-xs text-fg-dim hover:text-fg" onClick={() => setNewToken(null)}>Hide</button>
+            <button className="mt-2 text-xs text-fg-dim hover:text-fg" onClick={() => setNewToken(null)}>{t('btn_hide')}</button>
           </div>
         )}
 
         <div className="mb-4 grid gap-2 md:grid-cols-2">
-          <input className="input" placeholder="Token name (e.g. cline, codex)" value={name} onChange={e => setName(e.target.value)} />
+          <input className="input" placeholder={t('placeholder_token_name')} value={name} onChange={e => setName(e.target.value)} />
           <div className="flex flex-wrap gap-2">
             {ALL_SCOPES.map(s => (
               <label key={s} className={`badge cursor-pointer ${scopes.includes(s) ? 'bg-st-in_progress/20 text-st-in_progress border border-st-in_progress/40' : 'bg-bg-subtle text-fg-dim border border-border'}`}>
@@ -86,26 +85,26 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
-        <button className="btn-primary" onClick={create}><Plus size={14} /> Create Token</button>
+        <button className="btn-primary" onClick={create}><Plus size={14} /> {t('btn_create_token')}</button>
 
         <div className="mt-5 space-y-2">
           {tokens.length === 0 ? (
-            <div className="text-sm text-fg-dim">No tokens yet.</div>
+            <div className="text-sm text-fg-dim">{t('no_tokens')}</div>
           ) : (
-            tokens.map(t => (
-              <div key={t.id} className="flex items-center justify-between rounded border border-border p-3">
+            tokens.map(tok => (
+              <div key={tok.id} className="flex items-center justify-between rounded border border-border p-3">
                 <div>
-                  <div className="text-sm font-medium">{t.name}</div>
-                  <div className="font-mono text-xs text-fg-dim">{t.token_preview}</div>
-                  <div className="text-xs text-fg-dim">scopes: {(t.scopes || []).join(', ') || '—'}</div>
+                  <div className="text-sm font-medium">{tok.name}</div>
+                  <div className="font-mono text-xs text-fg-dim">{tok.token_preview}</div>
+                  <div className="text-xs text-fg-dim">{t('token_scopes', { scopes: (tok.scopes || []).join(', ') || '—' })}</div>
                   <div className="text-xs text-fg-dim">
-                    created {t.created_at ? new Date(t.created_at).toLocaleString() : '—'}
-                    {t.revoked_at && <span className="ml-2 text-st-cancelled">revoked</span>}
+                    {tok.created_at ? t('token_created_at', { date: new Date(tok.created_at).toLocaleString() }) : '—'}
+                    {tok.revoked_at && <span className="ml-2 text-st-cancelled">{t('token_revoked')}</span>}
                   </div>
                 </div>
-                {!t.revoked_at && (
-                  <button className="btn text-xs text-st-cancelled" onClick={() => revoke(t.id)}>
-                    <Trash2 size={12} /> Revoke
+                {!tok.revoked_at && (
+                  <button className="btn text-xs text-st-cancelled" onClick={() => revoke(tok.id)}>
+                    <Trash2 size={12} /> {t('btn_revoke')}
                   </button>
                 )}
               </div>
@@ -115,8 +114,8 @@ export default function SettingsPage() {
       </div>
 
       <div className="card p-5">
-        <h2 className="mb-3 text-base font-semibold">MCP Server Snippets</h2>
-        <p className="mb-3 text-sm text-fg-muted">Use these in your MCP client configuration. See <code className="font-mono">docs/MCP_SETUP.md</code> for full instructions.</p>
+        <h2 className="mb-3 text-base font-semibold">{t('mcp_snippets_title')}</h2>
+        <p className="mb-3 text-sm text-fg-muted">{t('mcp_snippets_desc')}</p>
         <pre className="overflow-auto rounded bg-bg-subtle p-3 font-mono text-xs">
 {`# Cline / Claude Code / Codex (mcp_servers entry)
 {
