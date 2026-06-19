@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../api'
 import { StatusBadge, PriorityBadge, ProgressBar } from './StatusBadge'
 
@@ -17,6 +18,7 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
   const [node, setNode] = useState<any>(null)
   const [history, setHistory] = useState<any[]>([])
   const [error, setError] = useState<string>('')
+  const { t } = useTranslation()
   const [statusForm, setStatusForm] = useState({
     status: '',
     evidence_summary: '',
@@ -106,7 +108,7 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
   if (!node) {
     return (
       <div className="fixed right-0 top-0 z-30 h-full w-[420px] border-l border-border bg-bg-card p-4">
-        Loading...
+        {t('loading')}
       </div>
     )
   }
@@ -124,13 +126,13 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
       </div>
 
       <div className="flex border-b border-border">
-        {TABS.map(t => (
+        {TABS.map(tabName => (
           <button
-            key={t}
-            className={`px-3 py-2 text-sm ${tab === t ? 'border-b-2 border-st-in_progress text-fg' : 'text-fg-muted'}`}
-            onClick={() => setTab(t)}
+            key={tabName}
+            className={`px-3 py-2 text-sm ${tab === tabName ? 'border-b-2 border-st-in_progress text-fg' : 'text-fg-muted'}`}
+            onClick={() => setTab(tabName)}
           >
-            {t}
+            {tabName}
           </button>
         ))}
       </div>
@@ -146,31 +148,31 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
             </div>
             <ProgressBar value={node.progress || 0} />
             <div>
-              <div className="text-xs text-fg-dim">Description</div>
+              <div className="text-xs text-fg-dim">{t('drawer_description')}</div>
               <div className="whitespace-pre-wrap text-sm">{node.description || '—'}</div>
             </div>
             <div>
-              <div className="text-xs text-fg-dim">Acceptance Criteria</div>
+              <div className="text-xs text-fg-dim">{t('drawer_acceptance')}</div>
               <div className="whitespace-pre-wrap text-sm">{node.acceptance_criteria || '—'}</div>
             </div>
             <div>
-              <div className="text-xs text-fg-dim">Evidence Summary</div>
+              <div className="text-xs text-fg-dim">{t('drawer_evidence_summary')}</div>
               <div className="whitespace-pre-wrap text-sm">{node.evidence_summary || '—'}</div>
             </div>
             {node.status === 'blocked' && (
               <div className="rounded border border-st-blocked/40 bg-st-blocked/10 p-3 text-sm">
-                <div className="mb-1 font-medium text-st-blocked">Blocker</div>
-                <div className="text-xs text-fg-muted">Reason</div>
+                <div className="mb-1 font-medium text-st-blocked">{t('drawer_blocker')}</div>
+                <div className="text-xs text-fg-muted">{t('drawer_blocker_reason')}</div>
                 <div>{node.blocker_reason || '—'}</div>
-                <div className="mt-1 text-xs text-fg-muted">Impact</div>
+                <div className="mt-1 text-xs text-fg-muted">{t('drawer_blocker_impact')}</div>
                 <div>{node.blocker_impact || '—'}</div>
-                <div className="mt-1 text-xs text-fg-muted">Next Action</div>
+                <div className="mt-1 text-xs text-fg-muted">{t('drawer_blocker_next')}</div>
                 <div>{node.next_action || '—'}</div>
               </div>
             )}
 
             <div className="card mt-3 p-3">
-              <div className="mb-2 text-sm font-medium">Update Status</div>
+              <div className="mb-2 text-sm font-medium">{t('drawer_update_status')}</div>
               <select
                 className="input mb-2 w-full"
                 value={statusForm.status}
@@ -183,7 +185,7 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
               {statusForm.status === 'done' && (
                 <textarea
                   className="input mb-2 w-full"
-                  placeholder="evidence_summary (required for done)"
+                  placeholder={t('placeholder_evidence_summary')}
                   rows={2}
                   value={statusForm.evidence_summary}
                   onChange={e => setStatusForm({ ...statusForm, evidence_summary: e.target.value })}
@@ -193,19 +195,19 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
                 <>
                   <input
                     className="input mb-2 w-full"
-                    placeholder="blocker_reason (required)"
+                    placeholder={t('placeholder_blocker_reason')}
                     value={statusForm.blocker_reason}
                     onChange={e => setStatusForm({ ...statusForm, blocker_reason: e.target.value })}
                   />
                   <input
                     className="input mb-2 w-full"
-                    placeholder="impact"
+                    placeholder={t('placeholder_blocker_impact')}
                     value={statusForm.impact}
                     onChange={e => setStatusForm({ ...statusForm, impact: e.target.value })}
                   />
                   <input
                     className="input mb-2 w-full"
-                    placeholder="next_action (required)"
+                    placeholder={t('placeholder_blocker_next')}
                     value={statusForm.next_action}
                     onChange={e => setStatusForm({ ...statusForm, next_action: e.target.value })}
                   />
@@ -213,11 +215,11 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
               )}
               <input
                 className="input mb-2 w-full"
-                placeholder="reason / override_reason"
+                placeholder={t('placeholder_override_reason')}
                 value={statusForm.reason}
                 onChange={e => setStatusForm({ ...statusForm, reason: e.target.value })}
               />
-              <button className="btn-primary w-full" onClick={submitStatus}>Apply</button>
+              <button className="btn-primary w-full" onClick={submitStatus}>{t('drawer_apply')}</button>
             </div>
           </div>
         )}
@@ -226,20 +228,20 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
           <div className="space-y-3">
             <EvidenceList nodeId={nodeId} />
             <div className="card p-3">
-              <div className="mb-2 text-sm font-medium">Add Evidence</div>
+              <div className="mb-2 text-sm font-medium">{t('drawer_add_evidence')}</div>
               <select
                 className="input mb-2 w-full"
                 value={evidenceForm.evidence_type}
                 onChange={e => setEvidenceForm({ ...evidenceForm, evidence_type: e.target.value })}
               >
-                {['note', 'file_path', 'commit_hash', 'command_output', 'test_result', 'screenshot_path', 'url'].map(t => (
-                  <option key={t} value={t}>{t}</option>
+                {['note', 'file_path', 'commit_hash', 'command_output', 'test_result', 'screenshot_path', 'url'].map(et => (
+                  <option key={et} value={et}>{et}</option>
                 ))}
               </select>
               <input className="input mb-2 w-full" placeholder="title" value={evidenceForm.title} onChange={e => setEvidenceForm({ ...evidenceForm, title: e.target.value })} />
-              <textarea className="input mb-2 w-full" rows={2} placeholder="content (path/hash/log/...)" value={evidenceForm.content} onChange={e => setEvidenceForm({ ...evidenceForm, content: e.target.value })} />
-              <textarea className="input mb-2 w-full" rows={2} placeholder="summary" value={evidenceForm.summary} onChange={e => setEvidenceForm({ ...evidenceForm, summary: e.target.value })} />
-              <button className="btn-primary w-full" onClick={submitEvidence}>Add</button>
+              <textarea className="input mb-2 w-full" rows={2} placeholder={t('placeholder_content')} value={evidenceForm.content} onChange={e => setEvidenceForm({ ...evidenceForm, content: e.target.value })} />
+              <textarea className="input mb-2 w-full" rows={2} placeholder={t('placeholder_summary')} value={evidenceForm.summary} onChange={e => setEvidenceForm({ ...evidenceForm, summary: e.target.value })} />
+              <button className="btn-primary w-full" onClick={submitEvidence}>{t('btn_add')}</button>
             </div>
           </div>
         )}
@@ -248,19 +250,19 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
           <div className="space-y-3">
             <ArtifactList nodeId={nodeId} />
             <div className="card p-3">
-              <div className="mb-2 text-sm font-medium">Add Artifact</div>
-              <input className="input mb-2 w-full" placeholder="type (document/source/build/...)" value={artifactForm.artifact_type} onChange={e => setArtifactForm({ ...artifactForm, artifact_type: e.target.value })} />
+              <div className="mb-2 text-sm font-medium">{t('drawer_add_artifact')}</div>
+              <input className="input mb-2 w-full" placeholder={t('placeholder_artifact_type')} value={artifactForm.artifact_type} onChange={e => setArtifactForm({ ...artifactForm, artifact_type: e.target.value })} />
               <input className="input mb-2 w-full" placeholder="title" value={artifactForm.title} onChange={e => setArtifactForm({ ...artifactForm, title: e.target.value })} />
-              <input className="input mb-2 w-full" placeholder="path or URL" value={artifactForm.path_or_url} onChange={e => setArtifactForm({ ...artifactForm, path_or_url: e.target.value })} />
-              <textarea className="input mb-2 w-full" rows={2} placeholder="summary" value={artifactForm.summary} onChange={e => setArtifactForm({ ...artifactForm, summary: e.target.value })} />
-              <button className="btn-primary w-full" onClick={submitArtifact}>Add</button>
+              <input className="input mb-2 w-full" placeholder={t('placeholder_path_or_url')} value={artifactForm.path_or_url} onChange={e => setArtifactForm({ ...artifactForm, path_or_url: e.target.value })} />
+              <textarea className="input mb-2 w-full" rows={2} placeholder={t('placeholder_summary')} value={artifactForm.summary} onChange={e => setArtifactForm({ ...artifactForm, summary: e.target.value })} />
+              <button className="btn-primary w-full" onClick={submitArtifact}>{t('btn_add')}</button>
             </div>
           </div>
         )}
 
         {tab === 'Notes' && (
           <div className="space-y-2">
-            <div className="text-xs text-fg-dim">Latest Note</div>
+            <div className="text-xs text-fg-dim">{t('drawer_latest_note')}</div>
             <div className="whitespace-pre-wrap text-sm">{node.latest_note || '—'}</div>
           </div>
         )}
@@ -268,7 +270,7 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
         {tab === 'History' && (
           <div className="space-y-2">
             {history.length === 0 ? (
-              <div className="text-sm text-fg-dim">No history yet.</div>
+              <div className="text-sm text-fg-dim">{t('drawer_no_history')}</div>
             ) : (
               history.map(h => (
                 <div key={h.id} className="rounded border border-border p-2 text-xs">
@@ -276,8 +278,8 @@ export function StepDrawer({ nodeId, onClose, onChanged }: Props) {
                     <span className="font-medium">{h.action_type}</span>
                     <span className="text-fg-dim">{new Date(h.created_at).toLocaleString()}</span>
                   </div>
-                  <div className="text-fg-muted">by {h.actor}</div>
-                  {h.reason && <div className="mt-1 text-fg-muted">reason: {h.reason}</div>}
+                  <div className="text-fg-muted">{t('by_actor', { actor: h.actor })}</div>
+                  {h.reason && <div className="mt-1 text-fg-muted">{t('reason_label', { reason: h.reason })}</div>}
                 </div>
               ))
             )}
