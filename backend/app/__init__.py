@@ -40,6 +40,7 @@ def _resolve_frontend_dist() -> str | None:
 def create_app(config_object: type = Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_object)
+    app.json.ensure_ascii = False
 
     # Ensure instance directory exists for SQLite
     db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
@@ -50,6 +51,15 @@ def create_app(config_object: type = Config) -> Flask:
         db_dir = os.path.dirname(db_path)
         if db_dir and not os.path.exists(db_dir):
             os.makedirs(db_dir, exist_ok=True)
+
+    from .database_recovery import ensure_sqlite_database
+    recovery_report = ensure_sqlite_database(
+        db_uri,
+        relative_to=os.path.join(app.root_path, ".."),
+    )
+    app.config["APC_DATABASE_RECOVERY"] = (
+        recovery_report.to_dict() if recovery_report else None
+    )
 
     db.init_app(app)
 

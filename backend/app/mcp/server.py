@@ -30,6 +30,13 @@ SERVER_INFO = {
 }
 
 
+def _configure_stdio_encoding() -> None:
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure:
+            reconfigure(encoding="utf-8", errors="replace")
+
+
 def _log(msg: str) -> None:
     # MCP stdio: stdout is reserved for JSON-RPC. Logs go to stderr.
     sys.stderr.write(f"[apc-mcp] {msg}\n")
@@ -37,9 +44,9 @@ def _log(msg: str) -> None:
 
 
 def _send(message: Dict[str, Any]) -> None:
-    sys.stdout.write(json.dumps(message, ensure_ascii=False))
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+    payload = json.dumps(message, ensure_ascii=False).encode("utf-8") + b"\n"
+    sys.stdout.buffer.write(payload)
+    sys.stdout.buffer.flush()
 
 
 def _ok(req_id: Any, result: Any) -> Dict[str, Any]:
@@ -144,16 +151,18 @@ def handle_message(msg: Dict[str, Any]) -> Dict[str, Any] | None:
 
 
 def main() -> None:
+    _configure_stdio_encoding()
     _log(f"starting MCP STDIO server, base_url={os.environ.get('APC_BASE_URL', 'http://127.0.0.1:8765')}")
     if not os.environ.get("APC_MCP_TOKEN"):
         _log("warning: APC_MCP_TOKEN is not set. Write operations will fail. Create a token in the Settings page.")
     while True:
         try:
-            line = sys.stdin.readline()
+            raw_line = sys.stdin.buffer.readline()
         except KeyboardInterrupt:
             break
-        if not line:
+        if not raw_line:
             break
+        line = raw_line.decode("utf-8", errors="replace")
         line = line.strip()
         if not line:
             continue

@@ -34,6 +34,41 @@ def test_health(client):
     assert rv.get_json()["status"] == "ok"
 
 
+def test_unicode_round_trip(client):
+    rv = client.post(
+        "/api/projects",
+        json={"name": "中文项目", "description": "验证 agent 写入中文"},
+    )
+    assert rv.status_code == 201, rv.get_json()
+    project = rv.get_json()
+    assert project["name"] == "中文项目"
+    assert "中文项目".encode("utf-8") in rv.data
+    assert b"\\u4e2d\\u6587" not in rv.data
+
+    rv = client.post(
+        "/api/nodes",
+        json={
+            "project_id": project["id"],
+            "parent_id": None,
+            "node_type": "part",
+            "title": "第一部分",
+            "description": "不要乱码",
+            "reason": "中文回归测试",
+        },
+    )
+    assert rv.status_code == 201, rv.get_json()
+    node = rv.get_json()
+    assert node["title"] == "第一部分"
+    assert node["description"] == "不要乱码"
+    assert "第一部分".encode("utf-8") in rv.data
+
+    rv = client.get(f"/api/projects/{project['id']}/tree")
+    assert rv.status_code == 200
+    tree = rv.get_json()
+    assert tree["project"]["description"] == "验证 agent 写入中文"
+    assert tree["tree"][0]["title"] == "第一部分"
+
+
 def test_full_workflow(client):
     # Create project
     rv = client.post(

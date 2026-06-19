@@ -20,6 +20,7 @@ It expects three environment variables:
 * `APC_BASE_URL=http://127.0.0.1:8765`
 * `APC_MCP_TOKEN=<paste your token>`
 * `APC_AGENT_NAME=cline`  (optional; appears in activity log)
+* `PYTHONUTF8=1` and `PYTHONIOENCODING=utf-8` on Windows to preserve Chinese and other Unicode text.
 
 ## Cline (VS Code extension)
 
@@ -35,7 +36,9 @@ Open the Cline settings JSON (Command Palette → "Cline: Edit MCP Servers") and
       "env": {
         "APC_BASE_URL": "http://127.0.0.1:8765",
         "APC_MCP_TOKEN": "apc_xxxxxxxxxxxxxxxxxxxx",
-        "APC_AGENT_NAME": "cline"
+        "APC_AGENT_NAME": "cline",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8"
       }
     }
   }
@@ -58,7 +61,9 @@ Edit `~/.config/claude/mcp.json` (Linux/macOS) or `%APPDATA%\Claude\mcp.json` (W
       "env": {
         "APC_BASE_URL": "http://127.0.0.1:8765",
         "APC_MCP_TOKEN": "apc_xxxxxxxxxxxxxxxxxxxx",
-        "APC_AGENT_NAME": "claude-code"
+        "APC_AGENT_NAME": "claude-code",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8"
       }
     }
   }
@@ -81,6 +86,8 @@ cwd = "/absolute/path/to/agent-project-console/backend"
 APC_BASE_URL = "http://127.0.0.1:8765"
 APC_MCP_TOKEN = "apc_xxxxxxxxxxxxxxxxxxxx"
 APC_AGENT_NAME = "codex"
+PYTHONUTF8 = "1"
+PYTHONIOENCODING = "utf-8"
 ```
 
 Or, if your Codex install uses JSON, add the same `agent-project-console` block under `mcpServers`.

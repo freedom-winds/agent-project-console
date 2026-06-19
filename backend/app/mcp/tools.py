@@ -1,6 +1,7 @@
 """MCP tool implementations. They call the local REST backend (do not touch the DB directly)."""
 import json
 import os
+from urllib.parse import urlencode
 from typing import Any, Dict
 
 import requests
@@ -11,7 +12,7 @@ def _base_url() -> str:
 
 
 def _headers() -> Dict[str, str]:
-    h = {"Content-Type": "application/json"}
+    h = {"Content-Type": "application/json; charset=utf-8"}
     token = os.environ.get("APC_MCP_TOKEN", "")
     if token:
         h["Authorization"] = f"Bearer {token}"
@@ -102,12 +103,16 @@ def move_node(args: dict) -> Any:
 
 def search_nodes(args: dict) -> Any:
     pid = args["project_id"]
-    q = args.get("query", "")
-    statuses = ",".join(args.get("status") or [])
-    tags = ",".join(args.get("tags") or [])
+    params = urlencode(
+        {
+            "q": args.get("query", ""),
+            "status": ",".join(args.get("status") or []),
+            "tags": ",".join(args.get("tags") or []),
+        }
+    )
     return _request(
         "GET",
-        f"/api/projects/{pid}/search?q={q}&status={statuses}&tags={tags}",
+        f"/api/projects/{pid}/search?{params}",
     )
 
 

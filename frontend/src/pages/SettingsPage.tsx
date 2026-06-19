@@ -127,7 +127,9 @@ export default function SettingsPage() {
     "env": {
       "APC_BASE_URL": "http://127.0.0.1:8765",
       "APC_MCP_TOKEN": "<paste your token here>",
-      "APC_AGENT_NAME": "cline"
+      "APC_AGENT_NAME": "cline",
+      "PYTHONUTF8": "1",
+      "PYTHONIOENCODING": "utf-8"
     }
   }
 }`}

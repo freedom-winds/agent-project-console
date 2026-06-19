@@ -167,6 +167,18 @@ class ServerController:
 
         try:
             flask_app = create_app(Config)
+            recovery = flask_app.config.get("APC_DATABASE_RECOVERY")
+            if recovery:
+                recovered_rows = sum(recovery["recovered_rows"].values())
+                restored_rows = sum(recovery["restored_from_activity"].values())
+                skipped_rows = sum(recovery["skipped_rows"].values())
+                _show_warning(
+                    "The SQLite database was damaged and has been recovered.\n\n"
+                    f"Recovered rows: {recovered_rows}\n"
+                    f"Restored from activity history: {restored_rows}\n"
+                    f"Unreadable rows skipped: {skipped_rows}\n"
+                    f"Backup: {recovery['backup_path']}"
+                )
             server = create_server(flask_app, host=self.host, port=self.port, threads=8)
             self._server = server
             print(f"[apc] backend listening on http://{self.host}:{self.port}", flush=True)
@@ -269,6 +281,20 @@ def _show_error(text: str) -> None:
             r = tk.Tk()
             r.withdraw()
             messagebox.showerror("Agent Project Console", text)
+            r.destroy()
+        except Exception:
+            print(text, file=sys.stderr)
+    threading.Thread(target=_go, daemon=True).start()
+
+
+def _show_warning(text: str) -> None:
+    def _go():
+        try:
+            import tkinter as tk
+            from tkinter import messagebox
+            r = tk.Tk()
+            r.withdraw()
+            messagebox.showwarning("Agent Project Console", text)
             r.destroy()
         except Exception:
             print(text, file=sys.stderr)
