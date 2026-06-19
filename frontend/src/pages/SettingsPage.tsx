@@ -50,7 +50,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="h-full overflow-y-auto p-8">
       <h1 className="mb-6 text-2xl font-semibold">Settings</h1>
 
       <div className="card mb-6 p-5">

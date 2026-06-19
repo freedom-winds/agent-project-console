@@ -39,7 +39,7 @@ export default function ProjectListPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="h-full overflow-y-auto p-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Projects</h1>
         <button className="btn-primary" onClick={() => setShowCreate(true)}>
